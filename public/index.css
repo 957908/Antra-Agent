@@ -294,15 +294,43 @@ header h1 {
 
 .message {
   display: flex;
-  max-width: 80%;
+  max-width: 85%;
+  gap: 0.65rem;
+  align-items: flex-start;
 }
 
 .message.bot {
   align-self: flex-start;
+  flex-direction: row;
 }
 
 .message.user {
   align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  object-fit: cover;
+}
+
+.bot-avatar {
+  background: hsla(180, 100%, 45%, 0.15);
+  border: 1.5px solid var(--accent-cyan);
+}
+
+.user-avatar {
+  background: hsla(280, 100%, 65%, 0.15);
+  border: 1.5px solid var(--accent-purple);
+  line-height: 1;
 }
 
 .msg-content {

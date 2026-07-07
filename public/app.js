@@ -33,6 +33,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const msgDiv = document.createElement('div');
     msgDiv.classList.add('message', sender);
     
+    if (sender === 'bot') {
+      const avatarImg = document.createElement('img');
+      avatarImg.classList.add('avatar', 'bot-avatar');
+      avatarImg.src = 'logo.png';
+      avatarImg.alt = 'Bot';
+      msgDiv.appendChild(avatarImg);
+    } else {
+      const avatarDiv = document.createElement('div');
+      avatarDiv.classList.add('avatar', 'user-avatar');
+      avatarDiv.textContent = '👤';
+      msgDiv.appendChild(avatarDiv);
+    }
+    
     const contentDiv = document.createElement('div');
     contentDiv.classList.add('msg-content');
     contentDiv.textContent = text;
@@ -57,7 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingDiv = document.createElement('div');
     loadingDiv.classList.add('message', 'bot');
     loadingDiv.id = botLoadingId;
-    loadingDiv.innerHTML = '<div class="msg-content"><i>Thinking...</i></div>';
+    loadingDiv.innerHTML = `
+      <img class="avatar bot-avatar" src="logo.png" alt="Bot" />
+      <div class="msg-content"><i>Thinking...</i></div>
+    `;
     chatOutput.appendChild(loadingDiv);
     chatOutput.scrollTop = chatOutput.scrollHeight;
 
