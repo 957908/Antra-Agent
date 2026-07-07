@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antra-Agent | Dashboard 🤖</title>
+  <link rel="stylesheet" href="index.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="glass-bg"></div>
+  
+  <header>
+    <div class="header-container">
+      <div class="logo-area">
+        <span class="pulse-dot"></span>
+        <h1>ANTRA AGENT</h1>
+      </div>
+      <div class="status-badge" id="system-status">
+        <span class="status-indicator"></span>
+        <span class="status-text">Online</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-grid">
+    <!-- Hero / 3D Logo Section -->
+    <section class="card hero-card">
+      <div class="hero-content">
+        <h2>3D System Core</h2>
+        <p class="subtitle">Real-time ASCII rotation rendering engine and browser 3D core.</p>
+        
+        <div class="dual-cube-container">
+          <!-- Web 3D Cube -->
+          <div class="cube-wrapper">
+            <p class="cube-title">Browser 3D Core</p>
+            <div class="scene">
+              <div class="cube">
+                <div class="cube-face cube-face-front">ANTRA</div>
+                <div class="cube-face cube-face-back">AGENT</div>
+                <div class="cube-face cube-face-right">AI</div>
+                <div class="cube-face cube-face-left">GIT</div>
+                <div class="cube-face cube-face-top">🤖</div>
+                <div class="cube-face cube-face-bottom">🙏</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ASCII 3D Cube -->
+          <div class="ascii-wrapper">
+            <p class="cube-title">Backend ASCII 3D Engine</p>
+            <pre id="ascii-cube-output">Initializing 3D Engine...</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick QA Console -->
+    <section class="card qa-card">
+      <h3>Ask Antra-Agent</h3>
+      <p class="card-desc">Interact with the Auto Q&A agent in real-time.</p>
+      
+      <div class="chat-console">
+        <div class="chat-output" id="chat-output">
+          <div class="message bot">
+            <div class="msg-content">Namaste! 🙏 I am your GitHub AI Assistant. Ask me anything about your git workflow, issues, PRs, or notifications.</div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <input type="text" id="chat-input" placeholder="Type a question (e.g., 'What are issues?', 'How do I create a PR?')..." />
+          <button id="chat-send-btn">Send</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- GitHub Daily Agenda -->
+    <section class="card agenda-card">
+      <div class="card-header">
+        <h3>GitHub Agenda</h3>
+        <button class="action-btn" id="scan-repos-btn">Scan GitHub</button>
+      </div>
+      <p class="card-desc">Active items from connected repositories.</p>
+      <div class="list-container" id="agenda-list">
+        <div class="loading">Loading agenda...</div>
+      </div>
+    </section>
+
+    <!-- AI Suggestions -->
+    <section class="card suggestions-card">
+      <h3>AI Recommendations</h3>
+      <p class="card-desc">Intelligent prioritizations based on repository state.</p>
+      <div class="list-container" id="suggestions-list">
+        <div class="loading">Loading suggestions...</div>
+      </div>
+    </section>
+
+    <!-- Twilio SMS Console -->
+    <section class="card sms-card">
+      <h3>SMS Notification Dispatch</h3>
+      <p class="card-desc">Send simulated Twilio alerts to user devices.</p>
+      <div class="sms-form">
+        <textarea id="sms-message" placeholder="Type SMS notification content..."></textarea>
+        <button id="sms-send-btn">Send SMS Notification</button>
+        <div class="status-msg" id="sms-status"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Made with ❤️ by Antra-Agent | Open Source AI Assistant | Namaste 🙏</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

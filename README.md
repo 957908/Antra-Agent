@@ -1,5 +1,9 @@
 # Antra-Agent - Your Personal GitHub AI Assistant 🤖
 
+<div align="center">
+  <img src="logo.png" width="120" height="120" alt="Antra-Agent Logo" style="border-radius: 50%;" />
+</div>
+
 > An intelligent AI-powered bot that manages your GitHub workflow, sends SMS notifications, and provides smart suggestions with a warm "Namaste" greeting.
 
 ## ✨ Features
