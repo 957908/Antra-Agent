@@ -2,14 +2,62 @@
   // Get backend server URL based on the script source
   const scriptTag = document.currentScript;
   const scriptURL = scriptTag ? scriptTag.src : '';
-  // Fallback to current origin if script tag is not found (e.g. inline scripts)
-  const serverURL = scriptURL ? new URL(scriptURL).origin : window.location.origin;
+  // Determine if script is served locally or from a remote server
+  const serverURL = (scriptURL && !scriptURL.startsWith('file:')) ? new URL(scriptURL).origin : window.location.origin;
 
   // 1. Create and inject Widget Stylesheet
   const link = document.createElement('link');
   link.rel = 'stylesheet';
-  link.href = serverURL + '/widget.css';
+  // Use absolute server URL if online, otherwise fall back to relative path for static hosting
+  link.href = serverURL.startsWith('file') ? 'widget.css' : serverURL + '/widget.css';
   document.head.appendChild(link);
+
+  // Local Client-side Q&A Database for offline/static deployment (no localhost needed)
+  class LocalQAHandler {
+    constructor() {
+      this.qaDatabase = {
+        github: 'GitHub is a platform for version control and collaboration using Git.',
+        agent: 'Antra-Agent is your personal AI assistant for managing GitHub tasks and notifications.',
+        issues: 'Issues are used to track ideas, bugs, and tasks in your repository.',
+        pullrequest: 'A pull request is a request to merge your code changes into the main branch.',
+        notification: 'Notifications alert you about activities in your repositories.',
+        agenda: 'Your agenda shows today\'s GitHub tasks and activities.',
+        suggestion: 'Suggestions are AI-powered recommendations for your work.',
+        sms: 'You will receive SMS notifications on your phone about important updates.',
+        default: 'That\'s a great question! Let me help you with GitHub and development tasks.'
+      };
+    }
+
+    handleQuestion(question) {
+      const lowerQuestion = question.toLowerCase();
+      for (const [key, answer] of Object.entries(this.qaDatabase)) {
+        if (lowerQuestion.includes(key)) {
+          return answer;
+        }
+      }
+      return this.getSmartAnswer(question);
+    }
+
+    getSmartAnswer(question) {
+      const responses = {
+        how: 'Here\'s how you can approach that: Start by checking your GitHub dashboard for relevant information.',
+        what: 'That\'s related to GitHub and development. Check your repositories for more details.',
+        why: 'Great question! This helps you manage your work better and stay organized.',
+        when: 'You can do this anytime! I recommend scheduling it during your work hours.',
+        where: 'You can find this in your GitHub dashboard or repositories.',
+        help: '📚 I\'m here to help! Ask me about GitHub, tasks, notifications, or anything development-related.'
+      };
+
+      for (const [keyword, response] of Object.entries(responses)) {
+        if (question.toLowerCase().startsWith(keyword)) {
+          return response;
+        }
+      }
+      return 'I understand your question. Please ask me about GitHub features, issues, pull requests, or notifications.';
+    }
+  }
+
+  const logoSrc = serverURL.startsWith('file') ? 'logo.png' : serverURL + '/logo.png';
 
   // 2. Create Widget HTML Structure
   const widgetContainer = document.createElement('div');
@@ -17,7 +65,7 @@
   widgetContainer.innerHTML = `
     <!-- Floating Action Button -->
     <button id="antra-widget-trigger" aria-label="Open Chat">
-      <img src="${serverURL}/logo.png" alt="Antra Logo" />
+      <img src="${logoSrc}" alt="Antra Logo" />
       <span class="pulse-ring"></span>
     </button>
 
@@ -25,7 +73,7 @@
     <div id="antra-widget-panel" class="hidden">
       <div class="widget-header">
         <div class="header-info">
-          <img src="${serverURL}/logo.png" alt="Antra Logo" class="header-logo" />
+          <img src="${logoSrc}" alt="Antra Logo" class="header-logo" />
           <div>
             <h4>Antra Agent</h4>
             <span class="online-indicator">Active Now</span>
@@ -36,7 +84,7 @@
 
       <div class="widget-chat-output" id="widget-chat-output">
         <div class="widget-message bot">
-          <img class="widget-avatar bot" src="${serverURL}/logo.png" alt="Bot" />
+          <img class="widget-avatar bot" src="${logoSrc}" alt="Bot" />
           <div class="widget-msg-content">Namaste! 🙏 I am your Antra-Agent. Ask me anything about your GitHub activities, issues, or repositories!</div>
         </div>
       </div>
@@ -75,7 +123,7 @@
     if (sender === 'bot') {
       const img = document.createElement('img');
       img.classList.add('widget-avatar', 'bot');
-      img.src = serverURL + '/logo.png';
+      img.src = logoSrc;
       img.alt = 'Bot';
       msgDiv.appendChild(img);
     } else {
@@ -108,32 +156,38 @@
     loadingDiv.classList.add('widget-message', 'bot');
     loadingDiv.id = loadingId;
     loadingDiv.innerHTML = `
-      <img class="widget-avatar bot" src="${serverURL}/logo.png" alt="Bot" />
+      <img class="widget-avatar bot" src="${logoSrc}" alt="Bot" />
       <div class="widget-msg-content"><i>Thinking...</i></div>
     `;
     chatOutput.appendChild(loadingDiv);
     chatOutput.scrollTop = chatOutput.scrollHeight;
 
-    try {
-      const response = await fetch(serverURL + '/api/visit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: text })
-      });
-      const data = await response.json();
+    let answer = null;
+    const isStaticMode = window.location.protocol === 'file:' || serverURL.startsWith('file');
 
-      document.getElementById(loadingId)?.remove();
-
-      if (data.answer) {
-        appendMessage('bot', data.answer);
-      } else {
-        appendMessage('bot', 'I could not process that request. Please try again.');
+    // Attempt to query the backend API if we are served over HTTP/HTTPS
+    if (!isStaticMode) {
+      try {
+        const response = await fetch(serverURL + '/api/visit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: text })
+        });
+        const data = await response.json();
+        answer = data.answer;
+      } catch (err) {
+        console.warn('Backend server offline. Falling back to client-side Q&A engine.', err);
       }
-    } catch (err) {
-      console.error('Widget error:', err);
-      document.getElementById(loadingId)?.remove();
-      appendMessage('bot', '⚠️ Connection error. Server unreachable.');
     }
+
+    // Offline / Static fallback: Calculate answer directly in client browser
+    if (!answer) {
+      const localQA = new LocalQAHandler();
+      answer = localQA.handleQuestion(text);
+    }
+
+    document.getElementById(loadingId)?.remove();
+    appendMessage('bot', answer);
   }
 
   sendBtn.addEventListener('click', sendMessage);
