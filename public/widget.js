@@ -1,8 +1,14 @@
 (function() {
+  // Get backend server URL based on the script source
+  const scriptTag = document.currentScript;
+  const scriptURL = scriptTag ? scriptTag.src : '';
+  // Fallback to current origin if script tag is not found (e.g. inline scripts)
+  const serverURL = scriptURL ? new URL(scriptURL).origin : window.location.origin;
+
   // 1. Create and inject Widget Stylesheet
   const link = document.createElement('link');
   link.rel = 'stylesheet';
-  link.href = '/widget.css';
+  link.href = serverURL + '/widget.css';
   document.head.appendChild(link);
 
   // 2. Create Widget HTML Structure
@@ -11,7 +17,7 @@
   widgetContainer.innerHTML = `
     <!-- Floating Action Button -->
     <button id="antra-widget-trigger" aria-label="Open Chat">
-      <img src="/logo.png" alt="Antra Logo" />
+      <img src="${serverURL}/logo.png" alt="Antra Logo" />
       <span class="pulse-ring"></span>
     </button>
 
@@ -19,7 +25,7 @@
     <div id="antra-widget-panel" class="hidden">
       <div class="widget-header">
         <div class="header-info">
-          <img src="/logo.png" alt="Antra Logo" class="header-logo" />
+          <img src="${serverURL}/logo.png" alt="Antra Logo" class="header-logo" />
           <div>
             <h4>Antra Agent</h4>
             <span class="online-indicator">Active Now</span>
@@ -30,7 +36,7 @@
 
       <div class="widget-chat-output" id="widget-chat-output">
         <div class="widget-message bot">
-          <img class="widget-avatar bot" src="/logo.png" alt="Bot" />
+          <img class="widget-avatar bot" src="${serverURL}/logo.png" alt="Bot" />
           <div class="widget-msg-content">Namaste! 🙏 I am your Antra-Agent. Ask me anything about your GitHub activities, issues, or repositories!</div>
         </div>
       </div>
@@ -69,7 +75,7 @@
     if (sender === 'bot') {
       const img = document.createElement('img');
       img.classList.add('widget-avatar', 'bot');
-      img.src = '/logo.png';
+      img.src = serverURL + '/logo.png';
       img.alt = 'Bot';
       msgDiv.appendChild(img);
     } else {
@@ -102,14 +108,14 @@
     loadingDiv.classList.add('widget-message', 'bot');
     loadingDiv.id = loadingId;
     loadingDiv.innerHTML = `
-      <img class="widget-avatar bot" src="/logo.png" alt="Bot" />
+      <img class="widget-avatar bot" src="${serverURL}/logo.png" alt="Bot" />
       <div class="widget-msg-content"><i>Thinking...</i></div>
     `;
     chatOutput.appendChild(loadingDiv);
     chatOutput.scrollTop = chatOutput.scrollHeight;
 
     try {
-      const response = await fetch('/api/visit', {
+      const response = await fetch(serverURL + '/api/visit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: text })
